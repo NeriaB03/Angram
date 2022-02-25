@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "564477131331",
+    "project_id": "angram-42970",
+    "storage_bucket": "angram-42970.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:564477131331:android:e414d36bb9adfb10dcf2f6",
+        "android_client_info": {
+          "package_name": "com.example.angram"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "564477131331-ii703pc97rivov56i2e933lhv62ssle9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5szdJ352A4YDGsGXiIvRznOaQLM8p3oI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "564477131331-ii703pc97rivov56i2e933lhv62ssle9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
