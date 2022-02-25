@@ -23,8 +23,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -72,9 +76,7 @@ public class FirebaseHandler {
                         hashMap.put("email", email);
                         hashMap.put("uid", uid);
                         hashMap.put("name", "");
-                        hashMap.put("profile_image", "");
-                        hashMap.put("followers", "0");
-                        hashMap.put("following", "0");
+                        hashMap.put("profileImage", "");
                         DatabaseReference reference = firebaseDatabase.getReference("Users");
                         reference.child(uid).setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
@@ -125,9 +127,7 @@ public class FirebaseHandler {
                     hashMap.put("email", email);
                     hashMap.put("uid", uid);
                     hashMap.put("name", name);
-                    hashMap.put("profile_image", "https://firebasestorage.googleapis.com/v0/b/angram-42970.appspot.com/o/dog_paw.png?alt=media&token=b2561e23-1466-46a0-b99e-70a9276820cc");
-                    hashMap.put("followers", "0");
-                    hashMap.put("following", "0");
+                    hashMap.put("profileImage", "https://firebasestorage.googleapis.com/v0/b/angram-42970.appspot.com/o/dog_paw.png?alt=media&token=b2561e23-1466-46a0-b99e-70a9276820cc");
                     DatabaseReference reference = firebaseDatabase.getReference("Users");
                     reference.child(uid).setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
@@ -179,11 +179,28 @@ public class FirebaseHandler {
                 final Uri downloadUri = uriTask.getResult();
                 if (uriTask.isSuccessful()) {
                     HashMap<String, Object> hashMap = new HashMap<>();
-                    hashMap.put("image_profile", downloadUri.toString());
-                    DatabaseReference reference = firebaseDatabase.getReference("Users");
-                    reference.child(firebaseAuth.getCurrentUser().getUid()).updateChildren(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    hashMap.put("profileImage", downloadUri.toString());
+                    DatabaseReference usersReference = firebaseDatabase.getReference("Users");
+                    usersReference.child(firebaseAuth.getCurrentUser().getUid()).updateChildren(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
+                            DatabaseReference databaseReference1 = firebaseDatabase.getReference("Posts");
+                            databaseReference1.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    for (DataSnapshot dataSnapshot1 : snapshot.getChildren()) {
+                                        Post posts = dataSnapshot1.getValue(Post.class);
+                                        if (posts.getUid().equals(firebaseAuth.getCurrentUser().getUid())) {
+                                            databaseReference1.child(posts.getPublishDate()).child("profileImage").setValue(downloadUri.toString());
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
                             pd.dismiss();
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putString("ProfileImage", downloadUri.toString());
@@ -211,7 +228,7 @@ public class FirebaseHandler {
         });
     }
 
-    public static void uploadPost(EditText des, ImageView image, Uri imageuri, String uid, String name, String email, String profile_image, String description, Context context, Activity activity, ProgressDialog pd, Bitmap bitmap) {
+    public static void uploadPost(EditText des, ImageView image, Uri imageuri, String uid, String name, String email, String profileImage, String description, Context context, Activity activity, ProgressDialog pd, Bitmap bitmap) {
         final String timestamp = String.valueOf(System.currentTimeMillis());
         String filepathname = "Posts/" + "post" + timestamp;
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -232,14 +249,14 @@ public class FirebaseHandler {
                     HashMap<Object, String> hashMap = new HashMap<>();
                     hashMap.put("uid", uid);
                     hashMap.put("name", name);
-                    hashMap.put("profile_image", profile_image);
+                    hashMap.put("profileImage", profileImage);
                     hashMap.put("description", description);
                     hashMap.put("image", downloadUri);
                     hashMap.put("publishDate", timestamp);
                     hashMap.put("likes", "0");
 
                     // set the data into firebase and then empty the title ,description and image data
-                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Posts");
+                    DatabaseReference databaseReference = firebaseDatabase.getReference("Posts");
                     databaseReference.child(timestamp).setValue(hashMap)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override

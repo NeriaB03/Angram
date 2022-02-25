@@ -37,11 +37,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyHolder> {
         final String hisuid = list.get(position).getUid();
         String userImage = list.get(position).getImage();
         String username = list.get(position).getName();
-        String followers = list.get(position).getFollowers();
-        String following = list.get(position).getFollowing();
-        holder.name.setText("Name: " + username);
-        holder.followers.setText("Followers: " + followers);
-        holder.following.setText("Following: " + following);
+        holder.name.setText(username);
         try {
             if(userImage == null || userImage.length() == 0) Glide.with(context).load(R.drawable.dog_paw).into(holder.profiletv);
             else Glide.with(context).load(userImage).into(holder.profiletv);
@@ -63,8 +59,6 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyHolder> {
             super(itemView);
             profiletv = itemView.findViewById(R.id.imagep);
             name = itemView.findViewById(R.id.namep);
-            followers = itemView.findViewById(R.id.followers);
-            following = itemView.findViewById(R.id.following);
         }
     }
 }

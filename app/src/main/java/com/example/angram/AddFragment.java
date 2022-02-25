@@ -51,7 +51,7 @@ public class AddFragment extends Fragment {
     private static final int IMAGE_PICKCAMERA_REQUEST = 400;
 
     Uri imageuri = null;
-    String name, email, uid, profile_image;
+    String name, email, uid, profileImage;
     Button upload;
 
     @Override
@@ -73,7 +73,7 @@ public class AddFragment extends Fragment {
                     uid = dataSnapshot1.child("uid").getValue().toString();
                     name = dataSnapshot1.child("name").getValue().toString();
                     email = "" + dataSnapshot1.child("email").getValue();
-                    profile_image = "" + dataSnapshot1.child("profile_image").getValue().toString();
+                    profileImage = "" + dataSnapshot1.child("profileImage").getValue().toString();
                 }
             }
 
@@ -229,7 +229,7 @@ public class AddFragment extends Fragment {
         pd.setMessage("Publishing Post");
         pd.show();
         Bitmap bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();
-        FirebaseHandler.uploadPost(des, image, imageuri, uid, name, email, profile_image, description, getContext(), getActivity(), pd, bitmap);
+        FirebaseHandler.uploadPost(des, image, imageuri, uid, name, email, profileImage, description, getContext(), getActivity(), pd, bitmap);
     }
 
     // Here we are getting data from image

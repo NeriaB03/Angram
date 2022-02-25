@@ -11,12 +11,13 @@ public class Post {
     private String description;
     private String likes;
     private String publishDate;
+    public String hashtags;
 
     public Post() {
 
     }
 
-    public Post(String uid, String name, String profileImage, String image, String description, String likes, String publishDate) {
+    public Post(String uid, String name, String profileImage, String image, String description, String likes, String publishDate, String hashtags) {
         this.uid = uid;
         this.name = name;
         this.profileImage = profileImage;
@@ -53,4 +54,8 @@ public class Post {
     public String getPublishDate() { return this.publishDate; }
 
     public void setPublishDate(String publishDate) { this.publishDate = publishDate; }
+
+    public String getHashtags() { return this.hashtags; }
+
+    public void setHashtags(String hashtags) { this.hashtags = hashtags; }
 }

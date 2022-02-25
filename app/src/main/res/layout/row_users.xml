@@ -37,21 +37,6 @@
                 android:textColor="@color/colorBlack"
                 android:textSize="18sp" />
 
-            <TextView
-                android:id="@+id/followers"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Followers"
-                android:textColor="@color/colorBlack"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/following"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Following"
-                android:textColor="@color/colorBlack" />
-
         </LinearLayout>
 
     </LinearLayout>

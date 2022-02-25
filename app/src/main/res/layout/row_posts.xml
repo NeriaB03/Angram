@@ -44,11 +44,6 @@
                     android:textColor="@color/colorBlack"
                     android:textSize="20sp" />
 
-                <TextView
-                    android:id="@+id/publishDate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
             </LinearLayout>
 
         </LinearLayout>
@@ -58,6 +53,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Description"
+            android:textSize="16sp"
             android:textColor="@color/colorBlack" />
 
         <ImageView
@@ -72,10 +68,11 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/plikeb"
+                android:id="@+id/likes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textSize="12sp"
                 android:textColor="@color/colorPrimary" />
 
         </LinearLayout>
@@ -91,17 +88,13 @@
             android:gravity="center"
             android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/like"
-                android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/publishDate"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:autoLink="all"
-                android:background="@color/colorWhite"
-                android:drawableStart="@drawable/ic_like"
-                android:drawableLeft="@drawable/ic_like"
-                android:padding="5dp"
-                android:text="Like" />
+                android:text="Date"
+                android:textSize="8sp"
+                android:textColor="@color/colorBlack" />
 
         </LinearLayout>
 

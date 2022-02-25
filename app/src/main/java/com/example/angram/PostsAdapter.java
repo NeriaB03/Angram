@@ -1,5 +1,6 @@
 package com.example.angram;
 
+import android.animation.ValueAnimator;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -45,6 +48,7 @@ public class PostsAdapter extends RecyclerView.Adapter<com.example.angram.PostsA
     private DatabaseReference liekeref, postref;
     boolean mprocesslike = false;
     List<Post> posts;
+    String profileImage;
 
     public PostsAdapter(Context context, List<Post> posts) {
         this.context = context;
@@ -72,13 +76,11 @@ public class PostsAdapter extends RecyclerView.Adapter<com.example.angram.PostsA
         final String image = posts.get(position).getImage();
         Calendar calendar = Calendar.getInstance(Locale.ENGLISH);
         calendar.setTimeInMillis(Long.parseLong(date));
-        calendar.setTimeInMillis(Long.parseLong("1645645721801"));
         String timedate = DateFormat.format("dd/MM/yyyy hh:mm aa", calendar).toString();
         holder.name.setText(nameh);
         holder.description.setText(descri);
-        holder.time.setText(timedate);
+        holder.publishDate.setText(timedate);
         holder.like.setText(likes + " Likes");
-        setLikes(holder, date);
         try {
             Glide.with(context).load(profileImage).into(holder.picture);
         } catch (Exception e) {
@@ -90,9 +92,9 @@ public class PostsAdapter extends RecyclerView.Adapter<com.example.angram.PostsA
         } catch (Exception e) {
 
         }
-        holder.likebtn.setOnClickListener(new View.OnClickListener() {
+        holder.image.setOnClickListener(new DoubleClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onDoubleClick() {
                 final int likes = Integer.parseInt(posts.get(position).getLikes());
                 mprocesslike = true;
                 final String postid = posts.get(position).getPublishDate();
@@ -110,6 +112,7 @@ public class PostsAdapter extends RecyclerView.Adapter<com.example.angram.PostsA
                                 mprocesslike = false;
                             }
                         }
+                        //holder.image.clearAnimation();
                     }
 
                     @Override
@@ -170,26 +173,6 @@ public class PostsAdapter extends RecyclerView.Adapter<com.example.angram.PostsA
         });
     }
 
-    private void setLikes(final MyHolder holder, final String pid) {
-        liekeref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child(pid).hasChild(myuid)) {
-                    holder.likebtn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_liked, 0, 0, 0);
-                    holder.likebtn.setText("Liked");
-                } else {
-                    holder.likebtn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_like, 0, 0, 0);
-                    holder.likebtn.setText("Like");
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
     @Override
     public int getItemCount() {
         return posts.size();
@@ -197,7 +180,7 @@ public class PostsAdapter extends RecyclerView.Adapter<com.example.angram.PostsA
 
     class MyHolder extends RecyclerView.ViewHolder {
         ImageView picture, image;
-        TextView name, time, description, like;
+        TextView name, publishDate, description, like;
         Button likebtn;
         LinearLayout profile;
 
@@ -206,10 +189,9 @@ public class PostsAdapter extends RecyclerView.Adapter<com.example.angram.PostsA
             picture = itemView.findViewById(R.id.profileImage);
             image = itemView.findViewById(R.id.postImage);
             name = itemView.findViewById(R.id.username);
-            time = itemView.findViewById(R.id.publishDate);
+            publishDate = itemView.findViewById(R.id.publishDate);
             description = itemView.findViewById(R.id.description);
-            like = itemView.findViewById(R.id.plikeb);
-            likebtn = itemView.findViewById(R.id.like);
+            like = itemView.findViewById(R.id.likes);
             profile = itemView.findViewById(R.id.profilelayout);
         }
     }

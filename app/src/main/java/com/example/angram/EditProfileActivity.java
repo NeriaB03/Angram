@@ -88,7 +88,7 @@ public class EditProfileActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                    String image = "" + dataSnapshot1.child("profile_image").getValue();
+                    String image = "" + dataSnapshot1.child("profileImage").getValue();
                     try {
                         Glide.with(EditProfileActivity.this).load(image).into(set);
                     } catch (Exception e) {
@@ -137,7 +137,7 @@ public class EditProfileActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
 
-                    String image = "" + dataSnapshot1.child("profile_image").getValue();
+                    String image = "" + dataSnapshot1.child("profileImage").getValue();
 
                     try {
                         Glide.with(EditProfileActivity.this).load(image).into(set);
@@ -172,7 +172,7 @@ public class EditProfileActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
 
-                    String image = "" + dataSnapshot1.child("profile_image").getValue();
+                    String image = "" + dataSnapshot1.child("profileImage").getValue();
 
                     try {
                         Glide.with(EditProfileActivity.this).load(image).into(set);

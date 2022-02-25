@@ -94,7 +94,7 @@ public class ProfileFragment extends Fragment {
                     String emaill = "" + dataSnapshot1.child("email").getValue();
                     String profileImage = sharedPreferences.getString("ProfileImage", "");
                     if(profileImage.equals("")) {
-                        String newProfileImage = "" + dataSnapshot1.child("profile_image").getValue();
+                        String newProfileImage = "" + dataSnapshot1.child("profileImage").getValue();
                         if(!newProfileImage.equals(profileImage)) {
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putString("ProfileImage", profileImage);

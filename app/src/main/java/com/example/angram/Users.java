@@ -8,21 +8,17 @@ public class Users {
     private String profileImage;
     private String uid;
     private ArrayList<Post> posts;
-    private String followers;
-    private String following;
 
     public Users() {
 
     }
 
-    public Users(String name, String email, String image, String uid, ArrayList<Post> posts, String followers, String following) {
+    public Users(String name, String email, String image, String uid, ArrayList<Post> posts) {
         this.name = name;
         this.email = email;
         this.profileImage = image;
         this.uid = uid;
         this.posts = posts;
-        this.followers = followers;
-        this.following = following;
     }
 
     public String getName() {
@@ -58,12 +54,4 @@ public class Users {
     public ArrayList<Post> getPosts() { return posts; }
 
     public void setPosts(ArrayList<Post> posts) { this.posts = posts; }
-
-    public String getFollowers() { return followers; }
-
-    public void setFollowers(String followers) { this.followers = followers; }
-
-    public String getFollowing() { return following; }
-
-    public void setFollowing(String following) { this.following = following; }
 }
