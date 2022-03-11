@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -57,7 +58,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private String storagepath = "ProfileImages/";
     private String uid;
     private ImageView set;
-    private TextView profilepic, editname, editpassword;
+    private TextView profilepic, editname, editpassword, signoutBtn;
     private ProgressDialog pd;
     private static final int CAMERA_REQUEST = 100;
     private static final int STORAGE_REQUEST = 200;
@@ -81,6 +82,7 @@ public class EditProfileActivity extends AppCompatActivity {
         pd = new ProgressDialog(this);
         pd.setCanceledOnTouchOutside(false);
         editpassword = findViewById(R.id.changepassword);
+        signoutBtn = findViewById(R.id.signoutBtn);
         cameraPermission = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         storagePermission = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
         Query query = FirebaseHandler.firebaseDatabase.getReference("Users").orderByChild("email").equalTo(FirebaseHandler.firebaseAuth.getCurrentUser().getEmail());
@@ -126,6 +128,17 @@ public class EditProfileActivity extends AppCompatActivity {
                 showNamephoneupdate("name");
             }
         });
+
+        signoutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("Signout", "Ues");
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.remove("ProfileImage");
+                editor.commit();
+                FirebaseHandler.signout(EditProfileActivity.this);
+            }
+        });
     }
 
     @Override
@@ -153,14 +166,6 @@ public class EditProfileActivity extends AppCompatActivity {
 
             }
         });
-
-        editpassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                pd.setMessage("Changing Password");
-                showPasswordChangeDailog();
-            }
-        });
     }
 
     @Override
@@ -185,13 +190,6 @@ public class EditProfileActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
-        editpassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                pd.setMessage("Changing Password");
-                showPasswordChangeDailog();
             }
         });
     }

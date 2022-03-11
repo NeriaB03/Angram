@@ -53,12 +53,13 @@ import java.util.List;
 public class ProfileFragment extends Fragment {
     private de.hdodenhof.circleimageview.CircleImageView avatartv;
     private TextView nam, email;
-    private FloatingActionButton fab;
     private ProgressDialog pd;
     private Button signout;
-    private GridView gridView;
     private RelativeLayout layout;
     private SharedPreferences sharedPreferences;
+    private RecyclerView recyclerView;
+    private List<Post> posts;
+    private PostsAdapter adapterPosts;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -71,18 +72,17 @@ public class ProfileFragment extends Fragment {
         avatartv = view.findViewById(R.id.avatartv);
         nam = view.findViewById(R.id.nametv);
         email = view.findViewById(R.id.emailtv);
-        fab = view.findViewById(R.id.fab);
         pd = new ProgressDialog(getActivity());
         pd.setCanceledOnTouchOutside(false);
-        gridView = view.findViewById(R.id.imagesGridView);
-        loadMyPosts();
+        recyclerView = view.findViewById(R.id.myPosts);
+        recyclerView.setHasFixedSize(true);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setReverseLayout(true);
+        layoutManager.setStackFromEnd(true);
+        recyclerView.setLayoutManager(layoutManager);
+        posts = new ArrayList<>();
+        loadPosts();
         layout = view.findViewById(R.id.relativeLayout);
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                Log.d("Hello", "Workkk");
-            }
-        });
         Query query = FirebaseHandler.firebaseDatabase.getReference("Users").orderByChild("email").equalTo(FirebaseHandler.firebaseAuth.getCurrentUser().getEmail());
         signout = view.findViewById(R.id.signoutBtn);
 
@@ -96,16 +96,16 @@ public class ProfileFragment extends Fragment {
                     if(profileImage.equals("")) {
                         String newProfileImage = "" + dataSnapshot1.child("profileImage").getValue();
                         if(!newProfileImage.equals(profileImage)) {
+                            profileImage = newProfileImage;
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putString("ProfileImage", profileImage);
                             editor.commit();
                         }
-                    } else {
-                        try {
-                            Glide.with(getActivity()).load(profileImage).into(avatartv);
-                        } catch (Exception e) {
+                    }
+                    try {
+                        Glide.with(getActivity()).load(profileImage).into(avatartv);
+                    } catch (Exception e) {
 
-                        }
                     }
                     nam.setText(name);
                     email.setText(emaill);
@@ -118,50 +118,36 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        fab.setOnClickListener(new View.OnClickListener() {
+        avatartv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getActivity(), EditProfileActivity.class));
             }
         });
 
-        signout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.remove("ProfileImage");
-                editor.commit();
-                FirebaseHandler.signout(getActivity());
-            }
-        });
         return view;
     }
 
-    private void loadMyPosts() {
-        List<String> images = new ArrayList<>();
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageReference = storage.getReference().child("Posts/" + FirebaseHandler.firebaseAuth.getCurrentUser().getUid() + "/");
-        storageReference.listAll()
-                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
-                    @Override
-                    public void onSuccess(ListResult listResult) {
-                        final int numOfFiles = listResult.getItems().size();
-                        for (StorageReference item : listResult.getItems()) {
-                            Task<Uri> uriTask = item.getDownloadUrl();
-                            while (!uriTask.isSuccessful()) ;
-                            final Uri downloadUri = uriTask.getResult();
-                            images.add(downloadUri.toString());
-                        }
-                        GridAdapter gridAdapter = new GridAdapter(getActivity(), images, images.size());
-                        gridView.setAdapter(gridAdapter);
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
+    private void loadPosts() {
+        DatabaseReference databaseReference = FirebaseHandler.firebaseDatabase.getReference("Posts");
+        Query query = databaseReference.orderByChild("uid").equalTo(FirebaseHandler.firebaseAuth.getUid());
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                posts.clear();
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                    Post post = dataSnapshot1.getValue(Post.class);
+                    posts.add(post);
+                    adapterPosts = new PostsAdapter(getActivity(), posts);
+                    recyclerView.setAdapter(adapterPosts);
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    }
-                });
+                Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     @Override

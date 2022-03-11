@@ -28,15 +28,15 @@
             <LinearLayout
                 android:id="@+id/linearLayout"
                 android:layout_width="match_parent"
-                android:layout_height="120dp"
+                android:layout_height="100dp"
                 android:layout_marginTop="50dp"
                 android:orientation="horizontal"
                 android:gravity="center">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/avatartv"
-                    android:layout_width="125dp"
-                    android:layout_height="125dp"
+                    android:layout_width="105dp"
+                    android:layout_height="105dp"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginStart="20dp"
                     android:padding="5dp"
@@ -70,42 +70,15 @@
 
             </LinearLayout>
 
-            <Button
-                android:id="@+id/signoutBtn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/linearLayout"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="25dp"
-                android:layout_marginRight="30dp"
-                android:background="@drawable/buttonss"
-                android:padding="4dp"
-                android:text="Signout"
-                android:textAllCaps="false"
-                android:textColor="@android:color/background_light"
-                android:textSize="24sp" />
-
         </RelativeLayout>
 
     </ScrollView>
 
-    <GridView
-        android:id="@+id/imagesGridView"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:footerDividersEnabled="false"
-        android:padding="5dp"
-        android:numColumns="3"
-        android:layout_below="@+id/scrollViewId"/>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="10dp"
-        android:src="@drawable/ic_edit_white" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/myPosts"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/scrollViewId"
+        android:layout_margin="5dp"/>
 
 </RelativeLayout>

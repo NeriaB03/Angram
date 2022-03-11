@@ -55,8 +55,6 @@ import java.util.UUID;
 
 public class HomeFragment extends Fragment {
 
-    FirebaseAuth firebaseAuth;
-    String myuid;
     RecyclerView recyclerView;
     List<Post> posts;
     PostsAdapter adapterPosts;
@@ -69,7 +67,6 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        firebaseAuth = FirebaseAuth.getInstance();
         recyclerView = view.findViewById(R.id.posts);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
@@ -82,7 +79,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadPosts() {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Posts");
+        DatabaseReference databaseReference = FirebaseHandler.firebaseDatabase.getReference("Posts");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

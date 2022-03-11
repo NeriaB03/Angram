@@ -112,7 +112,6 @@ public class PostsAdapter extends RecyclerView.Adapter<com.example.angram.PostsA
                                 mprocesslike = false;
                             }
                         }
-                        //holder.image.clearAnimation();
                     }
 
                     @Override
