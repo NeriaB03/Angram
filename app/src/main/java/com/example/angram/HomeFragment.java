@@ -28,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -55,9 +56,10 @@ import java.util.UUID;
 
 public class HomeFragment extends Fragment {
 
-    RecyclerView recyclerView;
-    List<Post> posts;
-    PostsAdapter adapterPosts;
+    private RecyclerView recyclerView;
+    private TextView emptytv;
+    private List<Post> posts;
+    private PostsAdapter adapterPosts;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -68,6 +70,7 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         recyclerView = view.findViewById(R.id.posts);
+        emptytv = view.findViewById(R.id.emptytv);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setReverseLayout(true);
@@ -91,6 +94,10 @@ public class HomeFragment extends Fragment {
                         adapterPosts = new PostsAdapter(getActivity(), posts);
                         recyclerView.setAdapter(adapterPosts);
                     }
+                }
+                if(posts.size() == 0) {
+                    recyclerView.setVisibility(View.INVISIBLE);
+                    emptytv.setVisibility(View.VISIBLE);
                 }
             }
 

@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
         android:name="androidx.multidex.MultiDexApplication"
@@ -20,10 +21,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Angram"
         tools:replace="android:allowBackup">
+        <activity android:name=".UserProfileActivity"></activity>
+
         <service
             android:name=".BackgroundMusic"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
         <activity android:name=".EditProfileActivity" />
         <activity android:name=".LoginActivity" />

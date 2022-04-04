@@ -10,4 +10,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <TextView
+        android:id="@+id/emptytv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textSize="50sp"
+        android:textColor="@color/colorRed"
+        android:text="Such Empty"
+        android:visibility="invisible"/>
+
+
 </RelativeLayout>

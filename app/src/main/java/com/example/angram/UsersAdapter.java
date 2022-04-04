@@ -1,6 +1,7 @@
 package com.example.angram;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +36,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyHolder> {
     @Override
     public void onBindViewHolder(@NonNull MyHolder holder, final int position) {
         final String hisuid = list.get(position).getUid();
-        String userImage = list.get(position).getImage();
+        String userImage = list.get(position).getProfileImage();
         String username = list.get(position).getName();
         holder.name.setText(username);
         try {
@@ -53,12 +54,18 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.MyHolder> {
     class MyHolder extends RecyclerView.ViewHolder {
 
         CircleImageView profiletv;
-        TextView name, followers, following;
+        TextView name;
 
         public MyHolder(@NonNull View itemView) {
             super(itemView);
             profiletv = itemView.findViewById(R.id.imagep);
             name = itemView.findViewById(R.id.namep);
+
+            profiletv.setOnClickListener((view) -> {
+                Intent userProfile = new Intent(context.getApplicationContext(), UserProfileActivity.class);
+                userProfile.putExtra("username", name.getText().toString());
+                context.startActivity(userProfile);
+            });
         }
     }
 }

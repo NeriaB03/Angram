@@ -1,9 +1,22 @@
 package com.example.angram;
 
+import android.Manifest;
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.icu.util.Output;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+import android.provider.MediaStore;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Gravity;
@@ -23,6 +36,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -38,6 +53,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -119,6 +139,39 @@ public class PostsAdapter extends RecyclerView.Adapter<com.example.angram.PostsA
 
                     }
                 });
+            }
+        });
+
+        holder.image.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+                // Vibrate for 500 milliseconds
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    vibrator.vibrate(VibrationEffect.createOneShot(300, VibrationEffect.DEFAULT_AMPLITUDE));
+                } else {
+                    //deprecated in API 26
+                    vibrator.vibrate(300);
+                }
+                BitmapDrawable bitmapDrawable = (BitmapDrawable) holder.image.getDrawable();
+                Bitmap bitmap = bitmapDrawable.getBitmap();
+                File sdCard = Environment.getExternalStorageDirectory();
+                File dir = new File(sdCard.getAbsolutePath() + "/Download");
+                dir.mkdirs();
+
+                String filename = String.format("%d.png", System.currentTimeMillis());
+
+                File outFile = new File(dir, filename);
+                try {
+                    FileOutputStream outputStream = new FileOutputStream(outFile);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+                    outputStream.flush();
+                    outputStream.close();
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+
+                return false;
             }
         });
     }

@@ -67,7 +67,6 @@ public class EditProfileActivity extends AppCompatActivity {
     private String cameraPermission[];
     private String storagePermission[];
     private Uri imageuri;
-    private String profileOrCoverPhoto;
     private SharedPreferences sharedPreferences;
 
     @Override
@@ -116,7 +115,6 @@ public class EditProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 pd.setMessage("Updating Profile Picture");
-                profileOrCoverPhoto = "profile_image";
                 showImagePicDialog();
             }
         });
@@ -132,38 +130,11 @@ public class EditProfileActivity extends AppCompatActivity {
         signoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("Signout", "Ues");
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.remove("ProfileImage");
                 editor.commit();
-                FirebaseHandler.signout(EditProfileActivity.this);
-            }
-        });
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Query query = FirebaseHandler.firebaseDatabase.getReference("Users").orderByChild("email").equalTo(FirebaseHandler.firebaseAuth.getCurrentUser().getEmail());
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-
-                    String image = "" + dataSnapshot1.child("profileImage").getValue();
-
-                    try {
-                        Glide.with(EditProfileActivity.this).load(image).into(set);
-                    } catch (Exception e) {
-
-                    }
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                FirebaseHandler.signout();
+                startActivity(new Intent(EditProfileActivity.this, LoginActivity.class));
             }
         });
     }

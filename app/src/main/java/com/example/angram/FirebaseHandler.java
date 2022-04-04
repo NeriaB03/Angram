@@ -9,12 +9,15 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -34,7 +37,9 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class FirebaseHandler {
     public static final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
@@ -84,7 +89,6 @@ public class FirebaseHandler {
                                 loadingBar.dismiss();
                                 Toast.makeText(context, "Logged in successfully", Toast.LENGTH_LONG).show();
                                 Intent mainIntent = new Intent(context, MainActivity.class);
-                                mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 context.startActivity(mainIntent);
                             }
                         }).addOnFailureListener(new OnFailureListener() {
@@ -98,7 +102,6 @@ public class FirebaseHandler {
                         loadingBar.dismiss();
                         Toast.makeText(context, "Logged in successfully", Toast.LENGTH_LONG).show();
                         Intent mainIntent = new Intent(context, MainActivity.class);
-                        mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         context.startActivity(mainIntent);
                     }
                 } else {
@@ -135,7 +138,6 @@ public class FirebaseHandler {
                             loadingBar.dismiss();
                             Toast.makeText(context, "Registered User " + FirebaseHandler.firebaseAuth.getCurrentUser().getEmail(), Toast.LENGTH_LONG).show();
                             Intent mainIntent = new Intent(context, MainActivity.class);
-                            mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             context.startActivity(mainIntent);
                         }
                     }).addOnFailureListener(new OnFailureListener() {
@@ -161,9 +163,33 @@ public class FirebaseHandler {
         });
     }
 
-    public static void signout(Context context) {
+    public static void signout() {
         firebaseAuth.signOut();
-        context.startActivity(new Intent(context, LoginActivity.class));
+    }
+
+    public static void loadPosts(String uid, List<Post> posts, Activity activity, RecyclerView recyclerView, TextView emptytv) {
+        DatabaseReference databaseReference = firebaseDatabase.getReference("Posts");
+        Query query = databaseReference.orderByChild("uid").equalTo(uid);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                posts.clear();
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                    Post post = dataSnapshot1.getValue(Post.class);
+                    posts.add(post);
+                    PostsAdapter adapterPosts = new PostsAdapter(activity, posts);
+                    recyclerView.setAdapter(adapterPosts);
+                }
+                if(posts.size() == 0) {
+                    recyclerView.setVisibility(View.INVISIBLE);
+                    emptytv.setVisibility(View.VISIBLE);
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(activity, databaseError.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     public static void updateProfileImage(String storagepath, Uri uri, SharedPreferences sharedPreferences, Context context, ProgressDialog pd) {

@@ -53,6 +53,7 @@ import java.util.List;
 public class ProfileFragment extends Fragment {
     private de.hdodenhof.circleimageview.CircleImageView avatartv;
     private TextView nam, email;
+    private TextView emptytv;
     private ProgressDialog pd;
     private Button signout;
     private RelativeLayout layout;
@@ -71,6 +72,7 @@ public class ProfileFragment extends Fragment {
         sharedPreferences = getContext().getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE);
         avatartv = view.findViewById(R.id.avatartv);
         nam = view.findViewById(R.id.nametv);
+        emptytv = view.findViewById(R.id.emptytv);
         email = view.findViewById(R.id.emailtv);
         pd = new ProgressDialog(getActivity());
         pd.setCanceledOnTouchOutside(false);
@@ -81,7 +83,8 @@ public class ProfileFragment extends Fragment {
         layoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(layoutManager);
         posts = new ArrayList<>();
-        loadPosts();
+        //loadPosts(FirebaseHandler.firebaseAuth.getUid());
+        FirebaseHandler.loadPosts(FirebaseHandler.firebaseAuth.getUid(), posts, getActivity(), recyclerView, emptytv);
         layout = view.findViewById(R.id.relativeLayout);
         Query query = FirebaseHandler.firebaseDatabase.getReference("Users").orderByChild("email").equalTo(FirebaseHandler.firebaseAuth.getCurrentUser().getEmail());
         signout = view.findViewById(R.id.signoutBtn);
@@ -128,27 +131,28 @@ public class ProfileFragment extends Fragment {
         return view;
     }
 
-    private void loadPosts() {
-        DatabaseReference databaseReference = FirebaseHandler.firebaseDatabase.getReference("Posts");
-        Query query = databaseReference.orderByChild("uid").equalTo(FirebaseHandler.firebaseAuth.getUid());
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                posts.clear();
-                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                    Post post = dataSnapshot1.getValue(Post.class);
-                    posts.add(post);
-                    adapterPosts = new PostsAdapter(getActivity(), posts);
-                    recyclerView.setAdapter(adapterPosts);
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
-    }
+//    private void loadPosts(String uid) {
+//        DatabaseReference databaseReference = FirebaseHandler.firebaseDatabase.getReference("Posts");
+//        //Query query = databaseReference.orderByChild("uid").equalTo(FirebaseHandler.firebaseAuth.getUid());
+//        Query query = databaseReference.orderByChild("uid").equalTo(uid);
+//        query.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                posts.clear();
+//                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+//                    Post post = dataSnapshot1.getValue(Post.class);
+//                    posts.add(post);
+//                    adapterPosts = new PostsAdapter(getActivity(), posts);
+//                    recyclerView.setAdapter(adapterPosts);
+//                }
+//            }
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                Toast.makeText(getActivity(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
+//            }
+//        });
+//    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

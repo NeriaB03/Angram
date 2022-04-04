@@ -13,10 +13,10 @@ public class Users {
 
     }
 
-    public Users(String name, String email, String image, String uid, ArrayList<Post> posts) {
+    public Users(String name, String email, String profileImage, String uid, ArrayList<Post> posts) {
         this.name = name;
         this.email = email;
-        this.profileImage = image;
+        this.profileImage = profileImage;
         this.uid = uid;
         this.posts = posts;
     }
@@ -37,9 +37,9 @@ public class Users {
         this.email = email;
     }
 
-    public String getImage() { return profileImage; }
+    public String getProfileImage() { return profileImage; }
 
-    public void setImage(String profileImage) {
+    public void setProfileImage(String profileImage) {
         this.profileImage = profileImage;
     }
 
