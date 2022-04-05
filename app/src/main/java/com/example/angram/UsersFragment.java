@@ -1,10 +1,13 @@
 package com.example.angram;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,6 +36,8 @@ public class UsersFragment extends Fragment {
     UsersAdapter adapterUsers;
     List<Users> usersList;
     FirebaseAuth firebaseAuth;
+    EditText searchUsersInput;
+    ArrayList<Users> mAllData=new ArrayList<Users>();
 
     public UsersFragment() {
         // Required empty public constructor
@@ -41,13 +47,46 @@ public class UsersFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_users, container, false);
+        searchUsersInput = view.findViewById(R.id.searchUsersInput);
         recyclerView = view.findViewById(R.id.recyclep);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         usersList = new ArrayList<>();
         firebaseAuth = FirebaseAuth.getInstance();
         getAllUsers();
+        searchUsersInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String search = searchUsersInput.getText().toString().toLowerCase(Locale.getDefault());
+                filter(search);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
         return view;
+    }
+
+    private void filter(String charText) {
+        charText = charText.toLowerCase(Locale.getDefault());
+        usersList.clear();
+        if (charText.length() == 0) {
+            usersList.addAll(mAllData);
+        } else {
+            for (Users user : mAllData) {
+                if (user.getName().toLowerCase(Locale.getDefault()).contains(charText)) {
+                    usersList.add(user);
+                }
+            }
+        }
+        adapterUsers.notifyDataSetChanged();
     }
 
     private void getAllUsers() {
@@ -65,6 +104,7 @@ public class UsersFragment extends Fragment {
                     adapterUsers = new UsersAdapter(getActivity(), usersList);
                     recyclerView.setAdapter(adapterUsers);
                 }
+                mAllData.addAll(usersList);
             }
 
             @Override

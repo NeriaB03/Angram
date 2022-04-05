@@ -6,10 +6,26 @@
     android:layout_height="match_parent"
     tools:context=".UsersFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclep"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent" >
+
+        <EditText
+            android:id="@+id/searchUsersInput"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:hint="Search For Specific User"
+            android:textColorHint="@color/colorGray1"
+            android:padding="8dp"
+            android:textColor="@color/colorWhite"
+            android:drawableStart="@drawable/ic_search" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclep"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/searchUsersInput" />
+
+    </RelativeLayout>
 
 </FrameLayout>

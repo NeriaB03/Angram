@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -225,7 +226,7 @@ public class AddFragment extends Fragment {
 
     // Upload the value of blog data into firebase
     private void uploadData(final String description) {
-        // show the progress dialog box
+        upload.setEnabled(false);
         pd.setMessage("Publishing Post");
         pd.show();
         Bitmap bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();

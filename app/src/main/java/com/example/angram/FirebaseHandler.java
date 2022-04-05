@@ -19,11 +19,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -74,36 +77,8 @@ public class FirebaseHandler {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     FirebaseUser user = firebaseAuth.getCurrentUser();
-                    if (task.getResult().getAdditionalUserInfo().isNewUser()) {
-                        String email = user.getEmail();
-                        String uid = user.getUid();
-                        HashMap<Object, String> hashMap = new HashMap<>();
-                        hashMap.put("email", email);
-                        hashMap.put("uid", uid);
-                        hashMap.put("name", "");
-                        hashMap.put("profileImage", "");
-                        DatabaseReference reference = firebaseDatabase.getReference("Users");
-                        reference.child(uid).setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                loadingBar.dismiss();
-                                Toast.makeText(context, "Logged in successfully", Toast.LENGTH_LONG).show();
-                                Intent mainIntent = new Intent(context, MainActivity.class);
-                                context.startActivity(mainIntent);
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(context, "Error while logging in", Toast.LENGTH_LONG).show();
-                                loadingBar.dismiss();
-                            }
-                        });
-                    } else {
-                        loadingBar.dismiss();
-                        Toast.makeText(context, "Logged in successfully", Toast.LENGTH_LONG).show();
-                        Intent mainIntent = new Intent(context, MainActivity.class);
-                        context.startActivity(mainIntent);
-                    }
+                    checkIfEmailVerfied(context, user, loadingBar, task);
+
                 } else {
                     loadingBar.dismiss();
                     Toast.makeText(context, "Error while logging in", Toast.LENGTH_LONG).show();
@@ -124,31 +99,9 @@ public class FirebaseHandler {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     FirebaseUser user = firebaseAuth.getCurrentUser();
-                    String email = user.getEmail();
-                    String uid = user.getUid();
-                    HashMap<Object, String> hashMap = new HashMap<>();
-                    hashMap.put("email", email);
-                    hashMap.put("uid", uid);
-                    hashMap.put("name", name);
-                    hashMap.put("profileImage", "https://firebasestorage.googleapis.com/v0/b/angram-42970.appspot.com/o/dog_paw.png?alt=media&token=b2561e23-1466-46a0-b99e-70a9276820cc");
-                    DatabaseReference reference = firebaseDatabase.getReference("Users");
-                    reference.child(uid).setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            loadingBar.dismiss();
-                            Toast.makeText(context, "Registered User " + FirebaseHandler.firebaseAuth.getCurrentUser().getEmail(), Toast.LENGTH_LONG).show();
-                            Intent mainIntent = new Intent(context, MainActivity.class);
-                            context.startActivity(mainIntent);
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(context, "Error Occurred", Toast.LENGTH_LONG).show();
-                            loadingBar.dismiss();
-                            firebaseAuth.signOut();
-                        }
-                    });
-
+                    if(user != null) {
+                        sendEmailVerification(context, user, loadingBar, name);
+                    }
                 } else {
                     Toast.makeText(context, "Error Occurred", Toast.LENGTH_LONG).show();
                     loadingBar.dismiss();
@@ -161,6 +114,93 @@ public class FirebaseHandler {
                 loadingBar.dismiss();
             }
         });
+    }
+
+    public static void sendEmailVerification(Context context, FirebaseUser user, ProgressDialog loadingBar, String name) {
+        user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()) {
+                    String email = user.getEmail();
+                    String uid = user.getUid();
+                    HashMap<Object, String> hashMap = new HashMap<>();
+                    hashMap.put("email", email);
+                    hashMap.put("uid", uid);
+                    hashMap.put("name", name);
+                    hashMap.put("profileImage", "https://firebasestorage.googleapis.com/v0/b/angram-42970.appspot.com/o/dog_paw.png?alt=media&token=b2561e23-1466-46a0-b99e-70a9276820cc");
+                    DatabaseReference reference = firebaseDatabase.getReference("Users");
+                    reference.child(uid).setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            loadingBar.dismiss();
+                            firebaseAuth.signOut();
+                            context.startActivity(new Intent(context.getApplicationContext(), LoginActivity.class));
+                            ((Activity) context).finish();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(context, "Error Occurred", Toast.LENGTH_LONG).show();
+                            loadingBar.dismiss();
+                            firebaseAuth.signOut();
+                            //restart the activity
+                            ((Activity) context).overridePendingTransition(0, 0);
+                            ((Activity) context).finish();
+                            ((Activity) context).overridePendingTransition(0, 0);
+                            context.startActivity(new Intent(context.getApplicationContext(), RegisterActivity.class));
+                        }
+                    });
+                } else {
+                    Toast.makeText(context, "Error Occurred", Toast.LENGTH_LONG).show();
+                    loadingBar.dismiss();
+                    //restart the activity
+                    ((Activity) context).overridePendingTransition(0, 0);
+                    ((Activity) context).finish();
+                    ((Activity) context).overridePendingTransition(0, 0);
+                    context.startActivity(new Intent(context.getApplicationContext(), RegisterActivity.class));
+                }
+            }
+        });
+    }
+
+    public static void checkIfEmailVerfied(Context context, FirebaseUser user, ProgressDialog loadingBar, Task<AuthResult> task) {
+        if(user.isEmailVerified()) {
+            ((Activity) context).finish();
+            if (task.getResult().getAdditionalUserInfo().isNewUser()) {
+                String email = user.getEmail();
+                String uid = user.getUid();
+                HashMap<Object, String> hashMap = new HashMap<>();
+                hashMap.put("email", email);
+                hashMap.put("uid", uid);
+                hashMap.put("name", "");
+                hashMap.put("profileImage", "");
+                DatabaseReference reference = firebaseDatabase.getReference("Users");
+                reference.child(uid).setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        loadingBar.dismiss();
+                        Toast.makeText(context, "Logged in successfully", Toast.LENGTH_LONG).show();
+                        Intent mainIntent = new Intent(context, MainActivity.class);
+                        context.startActivity(mainIntent);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(context, "Error while logging in", Toast.LENGTH_LONG).show();
+                        loadingBar.dismiss();
+                    }
+                });
+            } else {
+                loadingBar.dismiss();
+                Toast.makeText(context, "Logged in successfully", Toast.LENGTH_LONG).show();
+                Intent mainIntent = new Intent(context, MainActivity.class);
+                context.startActivity(mainIntent);
+            }
+        } else {
+            loadingBar.dismiss();
+            Toast.makeText(context, "You have to verify your email in order to login with this account", Toast.LENGTH_LONG).show();
+            //sendEmailVerification(context, user, loadingBar, "");
+        }
     }
 
     public static void signout() {

@@ -70,6 +70,7 @@ public class LoginActivity extends AppCompatActivity {
                     emailInput.setError("Invalid Email");
                     emailInput.setFocusable(true);
                 } else {
+                    loginBtn.setEnabled(false);
                     loadingBar.setMessage("Logging In...");
                     loadingBar.show();
                     FirebaseHandler.login(email, pass, LoginActivity.this, loadingBar);

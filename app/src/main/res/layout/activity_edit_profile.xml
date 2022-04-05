@@ -20,9 +20,9 @@
         android:id="@+id/setting_profile_image"
         android:layout_width="130dp"
         android:layout_height="130dp"
-        android:layout_marginStart="140dp"
+        android:layout_gravity="center"
         android:layout_marginTop="40dp"
-        android:src="@drawable/ic_users"
+        android:src="@drawable/dog_paw"
         app:civ_border_width="2dp"
         app:civ_border_color="@color/colorWhite"
         app:civ_circle_background_color="@color/colorWhite" />

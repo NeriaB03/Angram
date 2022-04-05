@@ -69,7 +69,7 @@ public class RegisterActivity extends AppCompatActivity {
                     passInput.setError("Length Must be greater than 6 character");
                     passInput.setFocusable(true);
                 } else {
-                    //registerUser(email, pass, name);
+                    signupBtn.setEnabled(false);
                     loadingBar.setMessage("Signing up...");
                     loadingBar.show();
                     FirebaseHandler.signup(name, email, pass, RegisterActivity.this, loadingBar);
